@@ -1703,11 +1703,6 @@
     enhanced-resolve "5.9.3"
     is-equal "^1.6.4"
 
-"@umijs/plugin-analytics@^0.2.3":
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/@umijs/plugin-analytics/-/plugin-analytics-0.2.3.tgz#d10c08806b8d6ac697b11d4d8b3ec4d5ad52a41b"
-  integrity sha512-6Fj+EOzd2vXe1YHjK1aqhHlITWBXcnhPd6pxAEjeGu3vAxDcfp1yM3PoRr//baBXk8CYF2krWDQGYy+OlRXM4A==
-
 "@umijs/plugin-run@4.0.24":
   version "4.0.24"
   resolved "https://registry.yarnpkg.com/@umijs/plugin-run/-/plugin-run-4.0.24.tgz#ad8953f8f5ed5b67500f028aafbf1576b35fbe45"
