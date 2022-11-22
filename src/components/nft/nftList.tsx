@@ -10,7 +10,6 @@ import { useSnapshot } from 'valtio';
 import { store } from '@/utils/store';
 import { ERC721Address } from '@/utils/common';
 import NFT from '@/components/nft/nft';
-import axios from 'axios';
 
 const NFTList = () => {
   const [searchParams] = useSearchParams();
@@ -19,7 +18,7 @@ const NFTList = () => {
 
   const snap = useSnapshot(store);
   const [tokenIds, setTokenIds] = useState<string[]>([]);
-  const [urls, setUrls] = useState<string[]>([]);
+  const [baseUri, setBaseUri] = useState('');
 
   const getL1ERC721Query = useQuery(
     ['getErc721Balance'],
@@ -54,6 +53,8 @@ const NFTList = () => {
                 item.balance_available && item.contract_address === address,
             )
             .map((item) => item.token_id);
+          // @ts-ignore
+          if (ids.length) setBaseUri(data.data.list[0].base_uri);
         } else {
           ids = data.data.list
             .filter(
@@ -65,12 +66,6 @@ const NFTList = () => {
         }
         if (!ids.length) return;
         setTokenIds(ids);
-        const { data: urls } = await axios.get(
-          `https://metadata.reddio.com/metadata?token_ids=${ids.join(
-            ',',
-          )}&contract_address=${address}`,
-        );
-        setUrls(urls.data.map((item: any) => item.image));
       },
     },
   );
@@ -89,13 +84,13 @@ const NFTList = () => {
       <div style={{ padding: '0 20px' }}>
         <Row gutter={[20, 24]} className={styles.nftListContent}>
           {type === 'l2'
-            ? urls.map((item, index) => {
+            ? tokenIds.map((item, index) => {
                 return (
                   <NFT
                     key={index}
-                    image={item}
                     tokenId={tokenIds[index]}
                     type={type}
+                    baseUri={baseUri}
                   />
                 );
               })
