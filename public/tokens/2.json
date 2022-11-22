@@ -1,0 +1,15 @@
+{
+    "name": "M.Hongla",
+    "description": "Mr. Football '22",
+    "image": "https://nft-marketplace-l2.netlify.app/images/2",
+    "attributes": [
+        {
+            "trait_type": "royaltyReceiver",
+            "value": "0x507222b2eA12829882210ab5fb6d4868199d835e"
+        },
+        {
+            "trait_type": "royaltyAmount",
+            "value": "2.5%"
+        }
+    ]
+}
