@@ -26,7 +26,7 @@ const Mint = (props: IOperateProps) => {
   const [loading, setLoading] = useState(false);
   const queryClient = useQueryClient();
   const [form] = Form.useForm();
-  const [selectedType, setSelectedType] = useState<'ERC721' | 'ERC721M'>( 
+  const [selectedType, setSelectedType] = useState<'ERC721' | 'ERC721M'>(
     'ERC721M',
   );
 
@@ -62,7 +62,7 @@ const Mint = (props: IOperateProps) => {
       contract_address,
       stark_key: keypair.publicKey,
       amount: "1"
-      },
+    },
       {
         headers: {
           'X-API-Key': 'rk-d3294774-a408-4f32-8f70-ebca18f9960f'
@@ -70,8 +70,7 @@ const Mint = (props: IOperateProps) => {
       });
 
     console.log(result.data);
-    // TODO: sell the minted NFT
-    
+
     setLoading(false);
     queryClient.refetchQueries(['orderList']);
     message.success('Mint Success');
