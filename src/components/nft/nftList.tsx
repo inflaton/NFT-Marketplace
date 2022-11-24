@@ -50,7 +50,8 @@ const NFTList = () => {
           ids = data.data.list
             .filter(
               (item) =>
-                item.balance_available && item.contract_address.toLowerCase() === address.toLowerCase(),
+                item.balance_available &&
+                item.contract_address.toLowerCase() === address.toLowerCase(),
             )
             .map((item) => item.token_id);
           // @ts-ignore
