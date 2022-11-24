@@ -11,6 +11,7 @@ import axios from 'axios';
 import { useSnapshot } from 'valtio';
 import { store } from '@/utils/store';
 import SellDialog from '../dialog/sell';
+import MintDialog from '../dialog/mint';
 
 const OrderList = () => {
   const snap = useSnapshot(store);
@@ -22,6 +23,7 @@ const OrderList = () => {
     ERC721M: BalanceResponse[];
   }>({ ERC721: [], ERC721M: [] });
   const [showSellDialog, setShowSellDialog] = useState(false);
+  const [showMintDialog, setShowMintDialog] = useState(false);
 
   const orderListQuery = useQuery(
     ['orderList'],
@@ -110,6 +112,14 @@ const OrderList = () => {
             theme="primary"
             variant="text"
             disabled={!snap.starkKey}
+            onClick={() => setShowMintDialog(true)}
+          >
+            Mint NFT
+          </Button>
+          <Button
+            theme="primary"
+            variant="text"
+            disabled={!snap.starkKey}
             onClick={() => setShowSellDialog(true)}
           >
             Sell NFT
@@ -152,6 +162,12 @@ const OrderList = () => {
           })}
         </Row>
       </div>
+      {showMintDialog ? (
+        <MintDialog
+          balance={nftBalance}
+          onClose={() => setShowMintDialog(false)}
+        />
+      ) : null}
       {showSellDialog ? (
         <SellDialog
           balance={nftBalance}

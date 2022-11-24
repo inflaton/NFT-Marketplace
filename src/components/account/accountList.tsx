@@ -29,9 +29,9 @@ import { reddio } from '@/utils/config';
 import Operate from '@/components/dialog/operate';
 import ERC721MDialog from '@/components/dialog/erc721m';
 import { ERC20Address, ERC721Address } from '@/utils/common';
-import type { BalancesV2Response } from '@reddio.com/js';
 
 const l1Items = ['GoerliETH', 'ERC20', 'ERC721'];
+const l2Items = ['GoerliETH', 'ERC20', 'ERC721', 'ERC721M'];
 
 const AccountList = () => {
   const snap = useSnapshot(store);
@@ -41,7 +41,12 @@ const AccountList = () => {
     ERC721: '',
     tokenIds: [],
   });
-  const [l2Balance, setL2Balance] = useState<BalancesV2Response[]>([]);
+  const [l2Balance, setL2Balance] = useState<Record<string, any>>({
+    GoerliETH: '',
+    ERC20: '',
+    ERC721: 0,
+    ERC721M: 0,
+  });
   const [address, setAddress] = useState('');
   const [dialogInfo, setDialogInfo] = useState({
     show: false,
@@ -69,25 +74,60 @@ const AccountList = () => {
   const getBalancesQuery = useQuery(
     ['getBalances', snap.starkKey, snap.erc721MAddress],
     () => {
-      return reddio.apis.getBalancesV2({
+      return reddio.apis.getBalances({
         starkKey: snap.starkKey,
       });
     },
     {
       onSuccess: ({ data }) => {
         if (data.status === 'FAILED') return;
-        const res = data.data.filter((item) => {
-          if (item.type === 'ETH' || item.type === 'ERC20') {
-            return true;
-          }
-          // @ts-ignore
-          return item.base_uri !== '';
-        });
-        setL2Balance(res);
-        setLoading((v) => ({
-          ...v,
-          l2: false,
-        }));
+        let list = data.data.list;
+        if (list.length && snap.starkKey) {
+          const ethBalance = list.find((item) => item.type === 'ETH');
+          const erc20Balance = list.find(
+            (item) => item.contract_address === ERC20Address.toLowerCase(),
+          );
+          const erc721Balance = list.filter(
+            (item) =>
+              item.contract_address === ERC721Address.toLowerCase() &&
+              item.balance_available,
+          );
+          const erc721MBalance = list.filter(
+            (item) =>
+              item.contract_address === snap.erc721MAddress.toLowerCase() &&
+              item.balance_available,
+          );
+          setL2Balance((value) => {
+            if (
+              (!!value.GoerliETH &&
+                ethBalance?.display_value !== value.GoerliETH) ||
+              (!!value.ERC20 && erc20Balance?.display_value !== value.ERC20) ||
+              (!!value.ERC721 && erc721Balance?.length !== value.ERC721)
+            ) {
+              const notification = NotificationPlugin.success({
+                title: 'Message',
+                content: 'Your Balance has been updated',
+                closeBtn: true,
+                duration: 3000,
+                onCloseBtnClick: () => {
+                  NotificationPlugin.close(notification);
+                },
+              });
+            }
+            return {
+              GoerliETH: ethBalance?.display_value,
+              ERC20: erc20Balance?.display_value,
+              ERC721: erc721Balance.length,
+              ERC721M: erc721MBalance.length,
+              tokenIds: erc721Balance,
+              erc721mTokenIds: erc721MBalance,
+            };
+          });
+          setLoading((v) => ({
+            ...v,
+            l2: false,
+          }));
+        }
       },
     },
   );
@@ -153,15 +193,17 @@ const AccountList = () => {
   }, []);
 
   const handleClick = useCallback(
-    (networkType: string, assetType: string, address?: string) => {
+    (networkType: string, assetType: string) => {
       if (assetType === 'ERC721') {
-        history.push(`/account/erc721?type=${networkType}&address=${address}`);
+        history.push(`/account/erc721?type=${networkType}`);
       }
       if (assetType === 'ERC721M') {
-        history.push(`/account/erc721m?type=${networkType}&address=${address}`);
+        history.push(
+          `/account/erc721m?type=${networkType}&address=${snap.erc721MAddress}`,
+        );
       }
     },
-    [],
+    [snap.erc721MAddress],
   );
 
   const handleOperate = useCallback((type: string, isClose = false) => {
@@ -194,7 +236,12 @@ const AccountList = () => {
       {showERC721Dialog ? (
         <ERC721MDialog onClose={() => setShowERC721Dialog(false)} />
       ) : null}
-      <Back>Account</Back>
+      <Back
+        buttonText="Add ERC721M"
+        handleClick={() => setShowERC721Dialog(true)}
+      >
+        Account
+      </Back>
       <Divider style={{ margin: 0 }} />
       <div className={styles.accountListContent}>
         <div>
@@ -230,19 +277,17 @@ const AccountList = () => {
         <div>
           <Text type="bold">L2</Text>
           <div className={styles.listWrapper}>
-            {l2Balance.map((item, index) => {
+            {l2Items.map((item) => {
               return (
                 <div
                   className={styles.listItem}
-                  key={`l2-${index}`}
-                  onClick={() =>
-                    handleClick('l2', item.type, item.contract_address)
-                  }
+                  key={`l2-${item}`}
+                  onClick={() => handleClick('l2', item)}
                 >
                   <Text color="#2C2C2C">
-                    {item.display_value} {item.symbol}
+                    {l2Balance[item]} {item}
                   </Text>
-                  {item.type === 'ERC721' || item.type === 'ERC721M' ? (
+                  {item === 'ERC721' || item === 'ERC721M' ? (
                     <ChevronRightIcon />
                   ) : null}
                 </div>
