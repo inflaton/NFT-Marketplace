@@ -10,8 +10,10 @@ import type { OrderListResponse, BalanceResponse } from '@reddio.com/js';
 import axios from 'axios';
 import { useSnapshot } from 'valtio';
 import { store } from '@/utils/store';
+import BuyDialog from '../dialog/buy';
 import SellDialog from '../dialog/sell';
 import MintDialog from '../dialog/mint';
+import { ethers } from 'ethers';
 
 const OrderList = () => {
   const snap = useSnapshot(store);
@@ -22,8 +24,13 @@ const OrderList = () => {
     ERC721: BalanceResponse[];
     ERC721M: BalanceResponse[];
   }>({ ERC721: [], ERC721M: [] });
+  const [nftToBuy, setNftToBuy] = useState<{
+    order: OrderListResponse,
+    card: any
+  }>({});
   const [showSellDialog, setShowSellDialog] = useState(false);
   const [showMintDialog, setShowMintDialog] = useState(false);
+  const [showBuyDialog, setShowBuyDialog] = useState(false);
 
   const orderListQuery = useQuery(
     ['orderList'],
@@ -37,11 +44,12 @@ const OrderList = () => {
         const arr = data.data.list
           .filter((item) => item.token_id !== '')
           .filter((item) => item.symbol.base_token_name === 'ETH');
+        arr.sort((a, b) => a.token_id - b.token_id);
         setOrderList(arr);
 
-        console.log(arr);
+        // console.log(arr);
         const images = arr.map((item) => ({ image: `https://nft-marketplace-l2.netlify.app/images/${item.token_id}` }));
-        console.log(images);
+        // console.log(images);
         setImages(images);
 
         // const tokenIds = arr.map((item) => item.token_id).join(',');
@@ -92,20 +100,31 @@ const OrderList = () => {
         message.error('Insufficient balance');
         return;
       }
-      const keypair = await reddio.keypair.generateFromEthSignature();
-      const params = await reddio.utils.getOrderParams({
-        keypair,
-        amount: order.amount,
-        tokenAddress: order.symbol.quote_token_contract_addr,
-        tokenId: order.token_id,
-        orderType: 'buy',
-        tokenType: order.token_type,
-        price: order.display_price,
-        marketplaceUuid: '11ed793a-cc11-4e44-9738-97165c4e14a7',
-      });
-      await reddio.apis.order(params);
-      orderListQuery.refetch();
-      message.success('Buy Success');
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const network = await provider.getNetwork();
+      console.log(network);
+
+      const chainId = network.chainId;
+
+      const signer = provider.getSigner();
+      const address = await signer.getAddress();
+      console.log(address);
+
+      const url = `https://mcnft.glitch.me/getNftCards/${chainId}/${address}`
+      console.log(`getting cards from ${url}`)
+
+      axios
+        .get(url)
+        .then((response) => {
+          const cards = response.data
+          const nftToBuy = { order, cards }
+          console.log('nftToBuy', nftToBuy)
+          setNftToBuy(nftToBuy);
+
+          setShowBuyDialog(true);
+        })
+        .catch(console.error)
     },
     [ethBalance],
   );
@@ -179,6 +198,12 @@ const OrderList = () => {
         <SellDialog
           balance={nftBalance}
           onClose={() => setShowSellDialog(false)}
+        />
+      ) : null}
+      {showBuyDialog ? (
+        <BuyDialog
+          nftToBuy={nftToBuy}
+          onClose={() => setShowBuyDialog(false)}
         />
       ) : null}
     </>
