@@ -40,7 +40,7 @@ const OrderList = () => {
         setOrderList(arr);
 
         console.log(arr);
-        const images = arr.map((item) => ({ image: `https://nft-marketplace-l2.netlify.app/images/${item.token_id}` }));
+        const images = arr.map((item) => ({ image: `https://nft-marketplace-l2.netlify.app/images/${item.token_id}.png` }));
         console.log(images);
         // setImages(images);
         // const tokenIds = arr.map((item) => item.token_id).join(',');
