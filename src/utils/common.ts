@@ -7,4 +7,6 @@ const ERC721Address = !isVercel
   ? '0x941661bd1134dc7cc3d107bf006b8631f6e65ad5'
   : '0x316442f06d97fc9864ff32f84b9fcaecd71f049d';
 
-export { ERC721Address, ERC20Address };
+const ERC721MAddress = '0x3fB44BFa72591Ff4be8bf048384b17c2fDAf9622';
+
+export { ERC721MAddress, ERC721Address, ERC20Address };

@@ -4,7 +4,7 @@ import Text from '../typography';
 import styles from './index.less';
 import { useQuery } from '@tanstack/react-query';
 import { reddio } from '@/utils/config';
-import { ERC721Address } from '@/utils/common';
+import { ERC721MAddress } from '@/utils/common';
 import { useCallback, useState } from 'react';
 import type { OrderListResponse, BalanceResponse } from '@reddio.com/js';
 import axios from 'axios';
@@ -29,7 +29,7 @@ const OrderList = () => {
     ['orderList'],
     () => {
       return reddio.apis.orderList({
-        contractAddress: ERC721Address,
+        contractAddress: ERC721MAddress,
       });
     },
     {
@@ -38,11 +38,17 @@ const OrderList = () => {
           .filter((item) => item.token_id !== '')
           .filter((item) => item.symbol.base_token_name === 'ETH');
         setOrderList(arr);
-        const tokenIds = arr.map((item) => item.token_id).join(',');
-        const { data: urls } = await axios.get(
-          `https://metadata.reddio.com/metadata?token_ids=${tokenIds}&contract_address=${ERC721Address}`,
-        );
-        setImages(urls.data);
+
+        console.log(arr);
+        const images = arr.map((item) => ({ image: `https://nft-marketplace-l2.netlify.app/images/${item.token_id}` }));
+        console.log(images);
+        // setImages(images);
+        // const tokenIds = arr.map((item) => item.token_id).join(',');
+        // const { data: urls } = await axios.get(
+        //   `https://metadata.reddio.com/metadata?token_ids=${tokenIds}&contract_address=${ERC721MAddress}`,
+        // );
+        // console.log(urls.data);
+        // setImages(urls.data);
       },
     },
   );
@@ -61,7 +67,7 @@ const OrderList = () => {
           const ethBalance = data.data.list.find((item) => item.type === 'ETH');
           const erc721Balance = data.data.list.filter(
             (item) =>
-              item.contract_address === ERC721Address.toLowerCase() &&
+              item.contract_address === ERC721MAddress.toLowerCase() &&
               item.balance_available,
           );
           const erc721MBalance = data.data.list.filter(
