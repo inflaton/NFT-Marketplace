@@ -1,0 +1,15 @@
+{
+    "name": "Guan Yin Statue",
+    "description": "Guan Yin from Qing Dynasty",
+    "image": "https://nft-marketplace-l2.netlify.app/images/8",
+    "attributes": [
+        {
+            "trait_type": "royaltyReceiver",
+            "value": "0x507222b2eA12829882210ab5fb6d4868199d835e"
+        },
+        {
+            "trait_type": "royaltyAmount",
+            "value": "2.5%"
+        }
+    ]
+}
