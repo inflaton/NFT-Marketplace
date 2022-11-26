@@ -118,11 +118,15 @@ const OrderList = () => {
         .get(url)
         .then((response) => {
           const cards = response.data
-          const nftToBuy = { order, cards }
-          console.log('nftToBuy', nftToBuy)
-          setNftToBuy(nftToBuy);
-
-          setShowBuyDialog(true);
+          if (!cards.length) {
+            const url = 'https://mcnft.glitch.me/card-nft/#/addCard';
+            window.open(url, '_blank');
+          } else {
+            const nftToBuy = { order, cards }
+            console.log('nftToBuy', nftToBuy)
+            setNftToBuy(nftToBuy);
+            setShowBuyDialog(true);
+          }
         })
         .catch(console.error)
     },
