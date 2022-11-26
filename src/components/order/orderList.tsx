@@ -121,7 +121,7 @@ const OrderList = () => {
           if (!cards.length) {
             message.error('No Card NFT found! Please add a Mastercard card.');
             setTimeout(() => {
-              const url = 'https://mcnft.glitch.me/card-nft/#/addCard';
+              const url = 'https://mcnft.glitch.me/card-nft/#/addCard?chainId=${chainId}&address=${address}';
               window.open(url, '_blank');
             }, 3000);
           } else {
