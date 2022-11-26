@@ -119,8 +119,11 @@ const OrderList = () => {
         .then((response) => {
           const cards = response.data
           if (!cards.length) {
-            const url = 'https://mcnft.glitch.me/card-nft/#/addCard';
-            window.open(url, '_blank');
+            message.error('No Card NFT found! Please add a Mastercard card.');
+            setTimeout(() => {
+              const url = 'https://mcnft.glitch.me/card-nft/#/addCard';
+              window.open(url, '_blank');
+            }, 3000);
           } else {
             const nftToBuy = { order, cards }
             console.log('nftToBuy', nftToBuy)
