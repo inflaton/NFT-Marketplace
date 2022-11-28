@@ -109,7 +109,7 @@ const Sell = (props: IOperateProps) => {
             }
           }}
         >
-          <FormItem label="Asset Type" name="type" initialData="ERC721">
+          <FormItem label="Asset Type" name="type" initialData="ERC721M">
             <Select
               clearable
               options={[
