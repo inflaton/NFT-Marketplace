@@ -4,6 +4,7 @@ export default {
   hash: true,
   define: {
     'process.env.IS_VERCEL': process.env.IS_VERCEL,
+    'process.env.MCNFT_BASE_URL': process.env.MCNFT_BASE_URL || 'https://mcnft.glitch.me',
   },
   scripts: [
     {

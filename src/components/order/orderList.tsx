@@ -111,7 +111,7 @@ const OrderList = () => {
       const address = await signer.getAddress();
       console.log(address);
 
-      const url = `https://mcnft.glitch.me/getNftCards/${chainId}/${address}`
+      const url = `${process.env.MCNFT_BASE_URL}/getNftCards/${chainId}/${address}`
       console.log(`getting cards from ${url}`)
 
       axios
@@ -121,7 +121,7 @@ const OrderList = () => {
           if (!cards.length) {
             message.error('No Card NFT found! Please add a Mastercard card.');
             setTimeout(() => {
-              const url = `https://mcnft.glitch.me/card-nft/#/addCard?chainId=${chainId}&address=${address}`;
+              const url = `${process.env.MCNFT_BASE_URL}/card-nft/#/addCard?chainId=${chainId}&address=${address}`;
               window.open(url, '_blank');
             }, 3000);
           } else {
